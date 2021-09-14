@@ -16,8 +16,6 @@ services:
       - DRUPAL_URI=http://web/
     # Keep cli running idle
     command: ["tail", "-f", "/dev/null"]
-    healthcheck:
-      disable: true # Temporary workaround to disable container healthcheck (causes performance issues with Docker)
 
   web:
     extends:
@@ -30,8 +28,6 @@ services:
       - APACHE_FCGI_HOST_PORT=php:9000
     depends_on:
       - php
-    healthcheck:
-      disable: true # Temporary workaround to disable container healthcheck (causes performance issues with Docker)
 
   php:
     extends:
@@ -45,16 +41,12 @@ services:
       - DRUSH_OPTIONS_URI=cms-${VIRTUAL_HOST}
     depends_on:
       - cli # cli has to start first to avoid race conditions in startup scripts between cli, php and preview
-    healthcheck:
-      disable: true # Temporary workaround to disable container healthcheck (causes performance issues with Docker)
 
   db:
     extends:
       file: ${HOME}/.docksal/stacks/services.yml
       service: mysql
     # Don't disable the healthcheck here as MySQL takes some time to start and we need the healthcheck to wait for that.
-    #healthcheck:
-    #  disable: true # Temporary workaround to disable container healthcheck (causes performance issues with Docker)
 
   preview:
     hostname: preview
@@ -78,8 +70,6 @@ services:
     command: ["bash", "-lc", "npm run develop"]
     depends_on:
       - cli # cli has to start first to avoid race conditions in startup scripts between cli, php and preview
-    healthcheck:
-      disable: true # Temporary workaround to disable container healthcheck (causes performance issues with Docker)
 
   frontend:
     hostname: frontend
@@ -90,8 +80,6 @@ services:
       - io.docksal.virtual-host=${VIRTUAL_HOST}
     environment:
       - APACHE_DOCUMENTROOT=/var/www/frontend/public
-    healthcheck:
-      disable: true # Temporary workaround to disable container healthcheck (causes performance issues with Docker)
 
 volumes:
   drupal_vendor:        # Used with cli and php
